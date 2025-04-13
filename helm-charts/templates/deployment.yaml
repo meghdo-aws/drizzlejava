@@ -50,28 +50,17 @@ spec:
           volumeMounts:
             {{- toYaml . | nindent 12 }}
           {{- end }}          
-        {{- if .Values.sqlproxy.enabled }}
+        {{- if .Values.database.enabled }}
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://127.0.0.1:{{ .Values.sqlproxy.db_port }}/{{ .Values.sqlproxy.db_name }}?sslmode=disable"
+              value: "jdbc:postgresql://{{ .Values.database.db_host }}:{{ .Values.database.db_port }}/{{ .Values.database.db_name }}"
             - name: SPRING_DATASOURCE_USERNAME
-              value: "{{ .Values.sqlproxy.db_user }}"
+              value: "{{ .Values.database.db_user }}"
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: db-password
                   key: db_password
-        - name: cloud-sql-proxy
-          image: "{{ .Values.sqlproxy.repository }}:{{ .Values.sqlproxy.tag }}"
-          args:
-            - "--structured-logs"
-            - "--address=0.0.0.0"
-            - "--port={{ .Values.sqlproxy.db_port }}"
-            - "{{ .Values.project_id }}:{{ .Values.region }}:{{ .Values.sqlproxy.db_instance }}"
-          resources:
-            {{- toYaml .Values.sqlproxy.resources | nindent 12 }}
-          securityContext:
-            runAsNonRoot: true
         {{- end }}
       {{- with .Values.volumes }}
       volumes:
