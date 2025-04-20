@@ -62,7 +62,7 @@ spec:
         - name: m2
           mountPath: /root/.m2
     - name: infra-tools
-      image: meghdo/infra-tools:v1.0
+      image: alpine/helm:3.11.1
       command: ["sleep"]
       args: ["9999999"]
       volumeMounts:
